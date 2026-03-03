@@ -27,7 +27,7 @@ onMounted(async () => {
   </div>
   <HelloWorld msg="Vite + Vue" />
   <section class="todos">
-    <h2>Todos (frontend → backend → db)</h2>
+    <h2>Todos</h2>
     <p v-if="error" class="error">{{ error }}</p>
     <ul v-else-if="todos.length">
       <li v-for="t in todos" :key="t.id">

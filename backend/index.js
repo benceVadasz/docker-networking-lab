@@ -31,5 +31,5 @@ app.get("/todos", async (req, res) => {
 });
 
 app.listen(3000, "0.0.0.0", () => {
-  console.log("Backend running on port 3000 - edit");
+  console.log("Backend running on port 3000");
 });
