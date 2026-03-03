@@ -4,8 +4,8 @@ services:
       context: frontend
     stdin_open: true
     volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./frontend:/app
+      - /app/node_modules
     restart: always
     networks:
       - private
@@ -17,8 +17,8 @@ services:
     build:
       context: backend
     volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./backend:/app
+      - /app/node_modules
     depends_on:
       - postgres
     networks:
