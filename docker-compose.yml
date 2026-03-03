@@ -49,17 +49,24 @@ services:
     ports:
       - 80:80
     networks:
-      - private
       - public
+      - private
     depends_on:
       - backend
       - frontend
     expose:
       - 3000
 networks:
+  test:
   public:
+    ipam:
+      config:
+        - subnet: 10.0.1.0/24
   private:
     internal: true
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
 
 volumes:
   postgres_data:
