@@ -77,7 +77,6 @@ services:
     expose:
       - 3000
 networks:
-  test:
   public:
     ipam:
       config:
