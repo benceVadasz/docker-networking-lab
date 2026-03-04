@@ -1,13 +1,17 @@
-FROM node:lts-alpine
+FROM node:lts-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm ci
 
 COPY . .
 
-EXPOSE 3000
+FROM node:lts-alpine AS runtime
 
-CMD [ "npm", "run", "dev" ]
+ENV NODE_ENV=production
+WORKDIR /app
+
+COPY --from=builder /app ./
+
+CMD ["npm", "start"]
