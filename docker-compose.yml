@@ -2,47 +2,29 @@ services:
   frontend:
     build:
       context: frontend
-    develop:
-      watch:
-        - action: sync
-          path: ./frontend
-          target: /app
-          initial_sync: true
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: package.json
     stdin_open: true
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     restart: always
     networks:
       - private
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
   backend:
     restart: always
     build:
       context: backend
-    develop:
-      watch:
-        - action: sync
-          path: ./backend
-          target: /app
-          initial_sync: true
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: package.json
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - private
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 3s
+      timeout: 3s
+      start_period: 0s
+      retries: 5
 
   postgres:
     restart: always
@@ -56,8 +38,12 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d
     networks:
       - private
-    expose:
-      - 5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 3s
+      timeout: 3s
+      start_period: 0s
+      retries: 5
 
   proxy:
     image: nginx
@@ -74,8 +60,6 @@ services:
     depends_on:
       - backend
       - frontend
-    expose:
-      - 3000
 networks:
   public:
     ipam:

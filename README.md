@@ -11,10 +11,54 @@ Docker is used to run a **public/private networks**: a reverse proxy (NGINX) as 
 - **Node (Express)** — backend, talks to Postgres
 - **Postgres** — database, init and seed via SQL in `db/init/`
 
-**Run**
+**Run (production-like)**
 
 ```bash
-docker compose up
+docker compose -f docker-compose.yml up
 ```
 
 Open http://localhost for the app; the API is under `/api/` (e.g. `GET /api/todos`).
+
+## Development workflow (hot reload)
+
+For local development you typically want hot reload, To keep `docker-compose.yml` production-oriented this can be handled via `docker-compose.override.yml`, which Docker Compose picks up automatically in dev.
+
+**Dev-only override file (`docker-compose.override.yml`):**
+
+```yaml
+services:
+  frontend:
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          initial_sync: true
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
+  backend:
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+          initial_sync: true
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+```
+
+**Start the stack for development (with hot reload):**
+
+```bash
+# Watch mode only works if the flag is provided
+docker compose up --watch
+```
+
+In this mode:
+
+This separation keeps your local workflow fast and pleasant, while keeping the base Compose file closer to how a real deployment would look.
